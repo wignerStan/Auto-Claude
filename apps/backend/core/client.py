@@ -714,10 +714,17 @@ def create_client(
                     )
             break
 
+    # Read sandbox settings from environment (for container deployments)
+    # Containers provide their own isolation, so sandbox can be safely disabled
+    sandbox_enabled = os.environ.get("AUTO_CLAUDE_SANDBOX", "true").lower() == "true"
+    auto_allow_bash = os.environ.get("AUTO_CLAUDE_AUTO_ALLOW_BASH", "true").lower() == "true"
+    # Permission mode: acceptEdits (auto-approve edits), ask (prompt), accept (auto-approve all), deny (block all)
+    permission_mode = os.environ.get("AUTO_CLAUDE_PERMISSION_MODE", "acceptEdits")
+
     security_settings = {
-        "sandbox": {"enabled": True, "autoAllowBashIfSandboxed": True},
+        "sandbox": {"enabled": sandbox_enabled, "autoAllowBashIfSandboxed": auto_allow_bash},
         "permissions": {
-            "defaultMode": "acceptEdits",  # Auto-approve edits within allowed directories
+            "defaultMode": permission_mode,  # Configurable permission mode
             "allow": [
                 # Allow all file operations within the project directory
                 # Include both relative (./**) and absolute paths for compatibility
@@ -773,7 +780,11 @@ def create_client(
         json.dump(security_settings, f, indent=2)
 
     print(f"Security settings: {settings_file}")
-    print("   - Sandbox enabled (OS-level bash isolation)")
+    if sandbox_enabled:
+        print("   - Sandbox enabled (OS-level bash isolation)")
+    else:
+        print("   - Sandbox DISABLED (container mode)")
+    print(f"   - Permission mode: {permission_mode}")
     print(f"   - Filesystem restricted to: {project_dir.resolve()}")
     if original_project_permissions:
         print("   - Worktree permissions: granted for original project directories")
