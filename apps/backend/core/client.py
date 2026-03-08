@@ -717,12 +717,17 @@ def create_client(
     # Read sandbox settings from environment (for container deployments)
     # Containers provide their own isolation, so sandbox can be safely disabled
     sandbox_enabled = os.environ.get("AUTO_CLAUDE_SANDBOX", "true").lower() == "true"
-    auto_allow_bash = os.environ.get("AUTO_CLAUDE_AUTO_ALLOW_BASH", "true").lower() == "true"
+    auto_allow_bash = (
+        os.environ.get("AUTO_CLAUDE_AUTO_ALLOW_BASH", "true").lower() == "true"
+    )
     # Permission mode: acceptEdits (auto-approve edits), ask (prompt), accept (auto-approve all), deny (block all)
     permission_mode = os.environ.get("AUTO_CLAUDE_PERMISSION_MODE", "acceptEdits")
 
     security_settings = {
-        "sandbox": {"enabled": sandbox_enabled, "autoAllowBashIfSandboxed": auto_allow_bash},
+        "sandbox": {
+            "enabled": sandbox_enabled,
+            "autoAllowBashIfSandboxed": auto_allow_bash,
+        },
         "permissions": {
             "defaultMode": permission_mode,  # Configurable permission mode
             "allow": [

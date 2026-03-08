@@ -76,11 +76,18 @@ class ClaudeAnalysisClient:
             Path to settings file
         """
         # Read sandbox settings from environment (for container deployments)
-        sandbox_enabled = os.environ.get("AUTO_CLAUDE_SANDBOX", "true").lower() == "true"
-        auto_allow_bash = os.environ.get("AUTO_CLAUDE_AUTO_ALLOW_BASH", "true").lower() == "true"
+        sandbox_enabled = (
+            os.environ.get("AUTO_CLAUDE_SANDBOX", "true").lower() == "true"
+        )
+        auto_allow_bash = (
+            os.environ.get("AUTO_CLAUDE_AUTO_ALLOW_BASH", "true").lower() == "true"
+        )
 
         settings = {
-            "sandbox": {"enabled": sandbox_enabled, "autoAllowBashIfSandboxed": auto_allow_bash},
+            "sandbox": {
+                "enabled": sandbox_enabled,
+                "autoAllowBashIfSandboxed": auto_allow_bash,
+            },
             "permissions": {
                 "defaultMode": "acceptEdits",
                 "allow": [
