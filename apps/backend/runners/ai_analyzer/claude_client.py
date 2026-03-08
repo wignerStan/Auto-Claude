@@ -3,6 +3,7 @@ Claude SDK client wrapper for AI analysis.
 """
 
 import json
+import os
 from pathlib import Path
 from typing import Any
 
@@ -74,8 +75,12 @@ class ClaudeAnalysisClient:
         Returns:
             Path to settings file
         """
+        # Read sandbox settings from environment (for container deployments)
+        sandbox_enabled = os.environ.get("AUTO_CLAUDE_SANDBOX", "true").lower() == "true"
+        auto_allow_bash = os.environ.get("AUTO_CLAUDE_AUTO_ALLOW_BASH", "true").lower() == "true"
+
         settings = {
-            "sandbox": {"enabled": True, "autoAllowBashIfSandboxed": True},
+            "sandbox": {"enabled": sandbox_enabled, "autoAllowBashIfSandboxed": auto_allow_bash},
             "permissions": {
                 "defaultMode": "acceptEdits",
                 "allow": [
